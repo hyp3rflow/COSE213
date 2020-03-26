@@ -29,9 +29,9 @@ typedef struct
 // names->capacity는 2배씩 증가
 void load_names(FILE *fp, int year_index, tNames *names)
 {
-	char str[25];
+	char str[30];
 
-	while (fgets(str, 25, fp) != EOF)
+	while (fgets(str, 30, fp) != NULL)
 	{
 		char name[20];
 		char sex;
@@ -39,6 +39,7 @@ void load_names(FILE *fp, int year_index, tNames *names)
 
 		char *ptr = strtok(str, ",");
 		sprintf(name, "%s", ptr);
+		fprintf(stderr, ">> %s\n", name);
 
 		ptr = strtok(NULL, ",");
 		sex = ptr[0];
@@ -47,22 +48,26 @@ void load_names(FILE *fp, int year_index, tNames *names)
 		frequency = atoi(ptr);
 
 		int flag = 0;
-		for (int i = 0; i < names->len; i++){
+		for (int i = 0; i < names->len; i++)
+		{
 			tName curr = (names->data)[i];
-			
-			if(curr.name == name && curr.sex == sex){
+
+			if (curr.name == name && curr.sex == sex)
+			{
 				flag++;
-
 				curr.freq[year_index] += frequency;
-
 				break;
 			}
 		}
 
-		if(!flag){
-			names->capacity *= 2;
-			realloc(names->data, names->capacity * sizeof(tName));
-
+		if (!flag)
+		{
+			if (names->capacity == names->len)
+			{
+				names->capacity *= 2;
+				fprintf(stderr, "realloc start!\n");
+				names->data = (tName *)realloc(names->data, names->capacity * sizeof(tName));
+			}
 			tName newNode = (names->data)[names->len];
 			strcpy(newNode.name, name);
 			newNode.sex = sex;
@@ -74,10 +79,24 @@ void load_names(FILE *fp, int year_index, tNames *names)
 }
 
 // 구조체 배열을 화면에 출력
-void print_names(tNames *names, int num_year);
+void print_names(tNames *names, int num_year)
+{
+	for (int i = 0; i < names->len; i++)
+	{
+		tName curr = (names->data)[i];
+		printf("%s", curr.name);
+		printf("\t%c", curr.sex);
+		for (int j = 0; j < num_year; j++)
+		{
+			printf("\t%d", curr.freq[j]);
+		}
+		printf("\n");
+	}
+}
 
 // qsort를 위한 비교 함수
-int compare(const void *n1, const void *n2){
+int compare(const void *n1, const void *n2)
+{
 	tName fst = *(tName *)n1;
 	tName snd = *(tName *)n2;
 
@@ -123,6 +142,8 @@ int main(int argc, char **argv)
 
 	// 이름 구조체 초기화
 	names = create_names();
+
+	fprintf(stderr, "name initialized!\n");
 
 	// 첫 연도 알아내기 "yob2009.txt" -> 2009
 	int start_year = atoi(&argv[1][3]);
