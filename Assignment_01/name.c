@@ -39,7 +39,6 @@ void load_names(FILE *fp, int year_index, tNames *names)
 
 		char *ptr = strtok(str, ",");
 		sprintf(name, "%s", ptr);
-		fprintf(stderr, ">> %s\n", name);
 
 		ptr = strtok(NULL, ",");
 		sex = ptr[0];
@@ -50,12 +49,10 @@ void load_names(FILE *fp, int year_index, tNames *names)
 		int flag = 0;
 		for (int i = 0; i < names->len; i++)
 		{
-			tName curr = (names->data)[i];
-
-			if (curr.name == name && curr.sex == sex)
+			if (!strcmp((names->data)[i].name, name) && (names->data)[i].sex == sex)
 			{
 				flag++;
-				curr.freq[year_index] += frequency;
+				(names->data)[i].freq[year_index] += frequency;
 				break;
 			}
 		}
@@ -65,15 +62,13 @@ void load_names(FILE *fp, int year_index, tNames *names)
 			if (names->capacity == names->len)
 			{
 				names->capacity *= 2;
-				fprintf(stderr, "realloc start!\n");
 				names->data = (tName *)realloc(names->data, names->capacity * sizeof(tName));
 			}
-			tName newNode = (names->data)[names->len];
-			strcpy(newNode.name, name);
-			newNode.sex = sex;
-			newNode.freq[year_index] = frequency;
 
-			names->len++;
+			strcpy((names->data)[names->len].name, name);
+			(names->data)[names->len].sex = sex;
+			(names->data)[names->len].freq[year_index] = frequency;
+			(names->len)++;
 		}
 	}
 }
@@ -100,7 +95,10 @@ int compare(const void *n1, const void *n2)
 	tName fst = *(tName *)n1;
 	tName snd = *(tName *)n2;
 
-	return !strcmp(fst.name, snd.name) ? fst.sex < snd.sex : strcmp(fst.name, snd.name);
+	if (!strcmp(fst.name, snd.name))
+		return fst.sex > snd.sex ? 1 : -1;
+	else
+		return strcmp(fst.name, snd.name);
 }
 
 // 함수 정의
@@ -125,7 +123,6 @@ void destroy_names(tNames *pnames)
 	free(pnames->data);
 	pnames->len = 0;
 	pnames->capacity = 0;
-
 	free(pnames);
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -142,8 +139,6 @@ int main(int argc, char **argv)
 
 	// 이름 구조체 초기화
 	names = create_names();
-
-	fprintf(stderr, "name initialized!\n");
 
 	// 첫 연도 알아내기 "yob2009.txt" -> 2009
 	int start_year = atoi(&argv[1][3]);
