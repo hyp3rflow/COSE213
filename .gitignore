@@ -1,3 +1,4 @@
 exf/
 .vscode/
 .DS_Store
+*.o

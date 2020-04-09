@@ -78,12 +78,11 @@ void print_names(tNames *names, int num_year)
 {
 	for (int i = 0; i < names->len; i++)
 	{
-		tName curr = (names->data)[i];
-		printf("%s", curr.name);
-		printf("\t%c", curr.sex);
+		printf("%s", (names->data)[i].name);
+		printf("\t%c", (names->data)[i].sex);
 		for (int j = 0; j < num_year; j++)
 		{
-			printf("\t%d", curr.freq[j]);
+			printf("\t%d", (names->data)[i].freq[j]);
 		}
 		printf("\n");
 	}
