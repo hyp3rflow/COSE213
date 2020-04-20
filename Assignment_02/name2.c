@@ -25,18 +25,18 @@ typedef struct
 // bsearch를 위한 비교 함수
 int compare(const void *n1, const void *n2)
 {
-	tName fst = *(tName *)n1;
-	tName snd = *(tName *)n2;
+	if (n1 == NULL || n2 == NULL)
+		return 0;
 
-	if (!strcmp(fst.name, snd.name))
+	if (!strcmp(((tName *)n1)->name, ((tName *)n2)->name))
 	{
-		if (fst.sex == snd.sex)
+		if (((tName *)n1)->sex == ((tName *)n2)->sex)
 			return 0;
-		return fst.sex > snd.sex ? 1 : -1;
+		return ((tName *)n1)->sex > ((tName *)n2)->sex ? 1 : -1;
 	}
 	else
 	{
-		return strcmp(fst.name, snd.name) > 0 ? 1 : -1;
+		return strcmp(((tName *)n1)->name, ((tName *)n2)->name) > 0 ? 1 : -1;
 	}
 }
 
@@ -81,29 +81,42 @@ int binary_search(const void *key, const void *base, size_t nmemb, size_t size, 
 // names->capacity는 2배씩 증가
 void load_names(FILE *fp, int year_index, tNames *names)
 {
-	char str[30];
-	int cnt = 0;
+	if (names == NULL || names->data == NULL)
+		return;
 
-	while (fgets(str, 30, fp) != NULL)
+	char str[30] = "";
+	// int cnt = 0;
+
+	while (fgets(str, sizeof(str), fp) != NULL)
 	{
 		tName keyNode;
-		for (int i = 0; i < MAX_YEAR_DURATION; i++)
-			keyNode.freq[i] = 0;
+		memset(keyNode.freq, 0, sizeof(int) * MAX_YEAR_DURATION);
 
 		char *ptr = strtok(str, ",");
-		sprintf(keyNode.name, "%s", ptr);
+		strcpy(keyNode.name, ptr);
 
 		ptr = strtok(NULL, ",");
-		keyNode.sex = ptr[0];
+		keyNode.sex = *ptr;
 
-		ptr = strtok(NULL, ",");
+		ptr = strtok(NULL, "\n");
 		keyNode.freq[year_index] = atoi(ptr);
 
 		//fprintf(stderr, "%d line completed\n", ++cnt);
 
+		if (names->len == 0)
+		{
+			int idx = 0;
+			memset((names->data + idx)->freq, 0, sizeof(int) * MAX_YEAR_DURATION);
+			strcpy((names->data + idx)->name, keyNode.name);
+			(names->data + idx)->sex = keyNode.sex;
+			(names->data + idx)->freq[year_index] = keyNode.freq[year_index];
+			(names->len)++;
+			continue;
+		}
+
 		int idx = binary_search(&keyNode, names->data, names->len, sizeof(tName), compare);
 
-		if (!strcmp(keyNode.name, (names->data)[idx].name) && keyNode.sex == (names->data)[idx].sex)
+		if (idx < names->len && !compare(&keyNode, names->data + idx))
 		{
 			//fprintf(stderr, "# \"%s\" found!\n", keyNode.name);
 			(names->data)[idx].freq[year_index] += keyNode.freq[year_index];
@@ -116,10 +129,18 @@ void load_names(FILE *fp, int year_index, tNames *names)
 			{
 				//fprintf(stderr, ">> \"%d\" realloced!\n", names->capacity);
 				names->capacity *= 2;
-				names->data = (tName *)realloc(names->data, names->capacity * sizeof(tName));
+				tName *alloc = (tName *)realloc(names->data, names->capacity * sizeof(tName));
+				if (!alloc)
+					return;
+				else
+					names->data = alloc;
 			}
-			memmove(names->data + idx + 1, names->data + idx, (names->len - idx) * sizeof(tName));
-			(names->data)[idx] = keyNode;
+			if (idx < names->len)
+				memmove(names->data + idx + 1, names->data + idx, (names->len - idx) * sizeof(tName));
+			memset((names->data + idx)->freq, 0, sizeof(int) * MAX_YEAR_DURATION);
+			strcpy((names->data + idx)->name, keyNode.name);
+			(names->data + idx)->sex = keyNode.sex;
+			(names->data + idx)->freq[year_index] = keyNode.freq[year_index];
 			(names->len)++;
 		}
 	}
