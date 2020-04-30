@@ -296,6 +296,7 @@ int removeNode(LIST *pList, char *keyPtr, tTOKEN **dataOut)
 	if (_search(pList, &pPre, &pLoc, keyPtr))
 	{
 		_delete(pList, pPre, pLoc, dataOut);
+		pList->count--;
 		return 1;
 	}
 
