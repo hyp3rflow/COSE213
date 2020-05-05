@@ -168,7 +168,8 @@ int postfix2tree(char *expr, TREE *pTree)
 		// valid counter check
 		if (cnt < 0)
 		{
-			return 0;
+			_destroy(newNode);
+			goto EXCEPTION;
 		}
 
 		if (isdigit(expr[i]))
@@ -181,7 +182,8 @@ int postfix2tree(char *expr, TREE *pTree)
 			// invalid
 			if (top < 1)
 			{
-				return 0;
+				_destroy(newNode);
+				goto EXCEPTION;
 			}
 
 			newNode->right = stack[top--];
@@ -193,13 +195,21 @@ int postfix2tree(char *expr, TREE *pTree)
 
 	if (!(top == 0 && cnt == 1))
 	{
-		return 0;
+		goto EXCEPTION;
 	}
 	else
 	{
 		pTree->root = stack[top];
 		return 1;
 	}
+
+EXCEPTION:
+	for (int i = 0; i <= top; i++)
+	{
+		_destroy(stack[i]);
+	}
+	free(pTree);
+	return 0;
 }
 
 static void _traverse(NODE *root)

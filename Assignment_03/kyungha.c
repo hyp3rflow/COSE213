@@ -150,7 +150,6 @@ LIST *createList(void)
 */
 void destroyToken(tTOKEN *pToken)
 {
-    pToken->token = NULL;
     free(pToken->token);
     pToken->freq = 0;
     free(pToken);
