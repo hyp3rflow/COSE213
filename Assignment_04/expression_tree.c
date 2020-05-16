@@ -159,7 +159,7 @@ TREE *createTree(void)
 
 int postfix2tree(char *expr, TREE *pTree)
 {
-	NODE *stack[10];
+	NODE *stack[MAX_STACK_SIZE];
 	int top = -1;
 	int cnt = 0;
 	for (int i = 0; expr[i]; i++)
@@ -262,7 +262,7 @@ static void _infix_print(NODE *root, int level)
 
 float evalPostfix(char *expr)
 {
-	float stack[100];
+	float stack[MAX_STACK_SIZE];
 	int top = -1;
 	for (int i = 0; expr[i]; i++)
 	{
