@@ -103,6 +103,9 @@ int main(int argc, char **argv)
 		return 100;
 	}
 
+	//int randt;
+	//scanf("%d", &randt);
+
 	fprintf(stdout, "How many numbers will you insert into a BST: ");
 
 	int numbers;
@@ -110,6 +113,7 @@ int main(int argc, char **argv)
 
 	fprintf(stdout, "Inserting: ");
 
+	//srand(randt);
 	srand(time(NULL));
 	for (int i = 0; i < numbers; i++)
 	{
