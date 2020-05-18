@@ -186,6 +186,19 @@ int postfix2tree(char *expr, TREE *pTree)
 				goto EXCEPTION;
 			}
 
+			int flag = 0;
+			char oper[] = {'+', '-', '/', '*'};
+			for (int j = 0; j < 4; j++)
+			{
+				if (expr[i] == oper[j])
+					flag = 1;
+			}
+			if (!flag)
+			{
+				_destroy(newNode);
+				goto EXCEPTION;
+			}
+
 			newNode->right = stack[top--];
 			newNode->left = stack[top--];
 			stack[++top] = newNode;
