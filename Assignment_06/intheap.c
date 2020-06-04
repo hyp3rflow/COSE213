@@ -74,11 +74,6 @@ int main(void)
 		heapPrint(heap);
 	}
 
-	for (int i = 0; i < MAX_ELEM; i++)
-	{
-		printf("\t%d", heap->heapArr[i]);
-	}
-
 	heapDestroy(heap);
 
 	return 0;
@@ -180,9 +175,12 @@ void heapPrint(HEAP *heap)
 
 	for (int i = 0; i <= heap->last; i++)
 	{
-		printf("\t%d", heap->heapArr[i]);
+		printf("%6d", heap->heapArr[i]);
 	}
 	printf("\n");
+
+	if (heap->last == heap->capacity - 1)
+		printf("\n");
 
 	return;
 }
