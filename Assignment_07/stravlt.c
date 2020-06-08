@@ -224,7 +224,6 @@ static NODE *_insert(NODE *root, NODE *newPtr)
 
 	if (bf > 1 && strcmp(newPtr->data, root->left->data) < 0)
 	{
-		printf("%s : rotateRight\n", root->data);
 		return rotateRight(root);
 	}
 	if (bf < -1 && strcmp(newPtr->data, root->right->data) > 0)
