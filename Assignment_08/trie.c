@@ -204,12 +204,11 @@ void triePrefixList(TRIE *root, char *str, char *dic[])
 
 void trieList(TRIE *root, char *dic[])
 {
-	if (root->index != -1)
+	if (root->subtrees[getIndex(EOW)])
 	{
-		printf("%s\n", dic[root->index]);
-		return;
+		printf("%s\n", dic[root->subtrees[getIndex(EOW)]->index]);
 	}
-	for (int i = 0; i < MAX_DEGREE; i++)
+	for (int i = 0; i < MAX_DEGREE - 1; i++)
 	{
 		if (root->subtrees[i])
 			trieList(root->subtrees[i], dic);
